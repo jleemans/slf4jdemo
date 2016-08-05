@@ -10,7 +10,7 @@ The application also shows how logging made through other frameworks (in this ca
 
 This project uses [Maven](https://maven.apache.org/). The following command will build the project and generate a slf4jdemo.war file in the /target folder:
 
-```
+```bash
 mvn clean compile
 ```
 
@@ -18,7 +18,7 @@ mvn clean compile
 
 The .war file can be deployed on any Java web container. Using Docker, and using Tomcat as an example, this can be a one-liner:
 
-```
+```bash
 docker run --name slf4jdemo-tomcat -p 8080:8080 -d tomcat:9-alpine
 ```
 
@@ -26,13 +26,13 @@ docker run --name slf4jdemo-tomcat -p 8080:8080 -d tomcat:9-alpine
 
 The .war file can be copied into this container as follows:
 
-```
+```bash
 docker cp ./target/slf4jdemo.war slf4jdemo-tomcat:/usr/local/tomcat/webapps
 ```
 
 Watch the standard output of the Tomcat container using the following command (since logging is configured to go to stdout, you'll see logging statements appear when you execute it):
 
-```
+```bash
 docker logs -f slf4jdemo-tomcat
 ```
 
@@ -40,7 +40,7 @@ Finally, to trigger the servlet to generate some logging statements, send a requ
 
 If you want to get into the container using a shell session, use the following command:
 
-```
+```bash
 docker exec -it slf4j-tomcat sh
 ```
 
@@ -53,13 +53,20 @@ Try to adapt the logback configuration file (e.g. set the root log level to "err
 
 ### By changing the configuration file
 
-blabla
+When you edit the log level in the logback configuration file of a running server (see /usr/local/tomcat/webapps/slf4jdemo/WEB-INF/classes/logback.xml for the aforementioned Docker container), you'll see that the changes take effect within 30 seconds. That's because logback.xml is configured to be auto-reloaded after 30 seconds:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds" >
+...
+</configuration>
+```
+
 
 ### Through JMX
 
 Replace the aforementioned `docker run` command with this one to enable JMX support:
 
-```
+```bash
 docker run --name slf4jdemo-tomcat -p 8080:8080 -p 9999:9999 -e CATALINA_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.rmi.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost" -d tomcat:9-alpine
 ```
 
@@ -67,7 +74,7 @@ docker run --name slf4jdemo-tomcat -p 8080:8080 -p 9999:9999 -e CATALINA_OPTS="-
 
 You can connect to the JMX server using jconsole:
 
-```
+```bash
 jconsole
 ```
 
