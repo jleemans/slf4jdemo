@@ -22,6 +22,8 @@ The .war file can be deployed on any Java web container. Using Docker, and using
 docker run --name slf4jdemo-tomcat -p 8080:8080 -d tomcat:9-alpine
 ```
 
+(assuming you can access the Tomcat container through "localhost" from your host machine).
+
 The .war file can be copied into this container as follows:
 
 ```
@@ -42,7 +44,36 @@ If you want to get into the container using a shell session, use the following c
 docker exec -it slf4j-tomcat sh
 ```
 
-# Suggestions
+# Experiments
 
+## Playing around with the log level
 Try to adapt the logback configuration file (e.g. set the root log level to "error") and redeploy. You'll see that both the log statements made through slf4j as well as those through JUL are impacted.
+
+## Changing the log level at runtime
+
+### By changing the configuration file
+
+blabla
+
+### Through JMX
+
+Replace the aforementioned `docker run` command with this one to enable JMX support:
+
+```
+docker run --name slf4jdemo-tomcat -p 8080:8080 -p 9999:9999 -e CATALINA_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.rmi.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost" -d tomcat:9-alpine
+```
+
+(assuming you can access your Tomcat container from your host machine as "localhost")
+
+You can connect to the JMX server using jconsole:
+
+```
+jconsole
+```
+
+Choose "localhost:9999" (again, replace localhost if needed)
+
+You'll be able to tune the logback configuration dynamically:
+![jconsole](jconsole.png)
+
 
